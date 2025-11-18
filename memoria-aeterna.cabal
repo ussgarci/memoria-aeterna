@@ -12,6 +12,21 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 -- extra-source-files:
 
+common lucid2
+    build-depends: lucid2 == 0.0.20250303
+
+common htmx-lucid
+    build-depends: htmx-lucid == 0.2.0.1
+
+common scotty
+    build-depends: scotty == 0.12.1
+
+common text
+  build-depends: text >=1.2.4 && <2.2
+
+common wai-extra
+  build-depends: wai-extra >=3.1 && <3.2
+
 common warnings
     ghc-options: -Wall
 
@@ -31,7 +46,12 @@ executable memoria-aeterna
     -- other-extensions:
     build-depends:
         base ^>=4.17.2.1,
-        memoria-aeterna
+        htmx-lucid,
+        lucid2,
+        memoria-aeterna,
+        scotty,
+        text,
+        wai-extra
 
     hs-source-dirs:   app
     default-language: Haskell2010
