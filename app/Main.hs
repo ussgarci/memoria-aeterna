@@ -1,22 +1,23 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-import Web.Scotty
-import Lucid
-import Htmx.Lucid.Core
+import Control.Monad (forM)
+import Data.Aeson (FromJSON, decode)
+import qualified Data.ByteString.Lazy as B
 import Data.Text as T
 import qualified Data.Text.Lazy as TL
-import System.Directory (listDirectory)
-import Data.Aeson (FromJSON, decode)
 import GHC.Generics (Generic)
-import qualified Data.ByteString.Lazy as B
-import Control.Monad (forM)
+import Htmx.Lucid.Core
+import Lucid
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
+import System.Directory (listDirectory)
+import Web.Scotty
 
 data Document = Document
     { titulus :: T.Text
-    } deriving (Show, Generic, FromJSON)
+    }
+    deriving (Show, Generic, FromJSON)
 
 generateListItems :: IO (Html ())
 generateListItems = do
@@ -27,11 +28,19 @@ generateListItems = do
     listItems <- forM jsonFiles $ \file -> do
         let filePath = dir <> "/" <> file
         content <- B.readFile filePath
-        
+
         case decode content of
             Just doc -> do
                 let textContent = titulus doc
-                return $ li_ [class_ "hover:text-blue-500 hover:underline cursor-pointer"] (toHtml textContent)
+                return
+                    $ li_
+                        [ class_ "p-4 bg-white shadow-md rounded-lg hover:shadow-xl transition-shadow cursor-pointer"
+                        ]
+                    $ a_
+                        [ href_ "#"
+                        , class_ "block text-center font-semibold hover:text-blue-600"
+                        ]
+                        (toHtml textContent)
             Nothing -> do
                 putStrLn $ "Error decoding JSON from file: " ++ filePath
                 return $ li_ [class_ "text-red-500"] (toHtml $ "Error loading " <> T.pack file)
@@ -53,14 +62,13 @@ home = do
                 script_ [src_ "https://cdn.tailwindcss.com"] T.empty
                 script_ [src_ "https://unpkg.com/htmx.org@1.9.10"] T.empty
 
-            body_ [class_ "min-h-screen bg-gray-50 flex items-center justify-center"] $ do
-                div_ [class_ "text-center p-10 bg-white shadow-xl rounded-lg"] $ do
+            body_ [class_ "min-h-screen bg-gray-50 flex items-center justify-center flex-col"] $ do
+                div_ [class_ "text-center p-10 bg-white shadow-xl rounded-lg mb-6"] $ do
                     h1_ [class_ "text-5xl font-extrabold text-blue-600 mb-4"] "Salvē!"
                     p_ [class_ "text-sm text-gray-500 mb-6 italic"] "Ad incipiendum, ēlige capitulum ex indice infrā."
-                    
-                    -- The dynamic list
-                    ul_ [class_ "list-none p-0 space-y-2 text-lg text-gray-800"] $
-                        listItems
+
+                ul_ [class_ "list-none p-0 space-y-4 text-lg text-gray-800 w-full max-w-sm mx-auto"] $
+                    listItems
 
 main :: IO ()
 main = scotty 3000 $ do
