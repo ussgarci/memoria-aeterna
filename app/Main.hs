@@ -1,8 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import qualified MyLib (someFunc)
+import Web.Scotty
 
-main :: IO ()
-main = do
-  putStrLn "Hello, Haskell!"
-  MyLib.someFunc
+main = scotty 3000 $
+  get "/:word" $ do
+    beam <- pathParam "word"
+    html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
