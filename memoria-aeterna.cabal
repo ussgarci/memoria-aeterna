@@ -74,6 +74,7 @@ executable memoria-aeterna
     build-depends:
         base ^>=4.17.2.1,
         scotty,
+        lucid2,
         memoria-aeterna
 
     -- Directories containing source files.
