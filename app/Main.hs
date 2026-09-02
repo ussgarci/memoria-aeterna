@@ -1,88 +1,58 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
+import Lucid
 import qualified MyLib (someFunc)
 import Web.Scotty
-import Lucid
-
 
 cdnImports :: Html ()
-cdnImports = do 
-  link_ [ rel_ "stylesheet"
-        , href_ "https://cdn.jsdelivr.net/npm/daisyui@5" 
+cdnImports = do
+    link_
+        [ rel_ "stylesheet"
+        , href_ "https://cdn.jsdelivr.net/npm/daisyui@5"
         , type_ "text/css"
         ]
-  link_ [ rel_ "stylesheet"
-        , href_ "https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" 
+    link_
+        [ rel_ "stylesheet"
+        , href_ "https://cdn.jsdelivr.net/npm/daisyui@5/themes.css"
         , type_ "text/css"
         ]
-  script_ [ src_ "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" ] 
-          ("" :: Html ()) -- script tag requires inner content or empty string in Lucid
-
--- homepage :: String -> Html ()
--- homepage name = 
---   html_
---     (do head_
---           (do title_ "Introduction page."
---               cdnImports)
---         body_
---           (do div_ [id_ "header", style_ "color:white"] "Syntax"
---               p_ (span_ (strong_ "This is an example of Lucid syntax."))
---               p_ (span_ (strong_ (toHtml name)))
---               button_ [class_ "btn btn-error"] "Wow!"
---               hr_ []
---               ul_ (mapM_ (li_ . toHtml . show)
---                          ([1, 2, 3] :: [Int])) 
---               table_ (tr_ (do td_ "Hello!"
---                               td_ [class_ "alt"] "World!"
---                               td_ "Sup?"))))
+    script_
+        [src_ "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"]
+        ("" :: Html ()) -- script tag requires inner content or empty string in Lucid
 
 navbar :: Html ()
-navbar = nav_ [class_ "navbar justify-between bg-base-300"] $ do
-    
-    a_ [class_ "btn btn-ghost text-lg"] $ do
-        "Memōria Aeterna"
+navbar =
+    nav_ [class_ "navbar justify-between bg-base-300"] $ do
+        a_ [class_ "btn btn-ghost text-lg"] $ do
+            "Memōria Aeterna"
 
--- app/Main.hs:44:3: error:
---     • Couldn't match expected type: HtmlT
---                                       Data.Functor.Identity.Identity a1
---                   with actual type: HtmlT m0 a0 -> HtmlT m0 a0
---     • Probable cause: ‘doctypehtml_’ is applied to too few arguments
---       In a stmt of a 'do' block: doctypehtml_
---       In the expression:
---         do doctypehtml_
---            html_ [data_ "theme" "retro"]
---              $ do head_ $ do ...
---                   body_ $ do ...
---       In an equation for ‘domus’:
---           domus
---             = do doctypehtml_
---                  html_ [data_ "theme" "retro"]
---                    $ do head_ $ ...
---                         ....
---    |
--- 44 |   doctypehtml_ 
--- domus :: Html ()
--- domus = do
---   doctypehtml_ 
---   html_ [data_ "theme" "retro"] $ do
---       head_ $ do
---           title_ "Memōria Aeterna"
---           cdnImports
---       body_  $ do
---           navbar
+hero :: Html ()
+hero =
+    div_ [class_ "flex justify-center"] $ do
+        div_ [class_ "flex flex-col items-center text-center gap-6 max-w-xl"] $ do
+            h1_ [class_ "text-5xl font-bold"] "Memōria Aeterna"
+            span_ [class_ ""] "Memōria Aeterna: quia mala memoria mihi est"
+            div_ [class_ "flex gap-4"] $ do
+                a_ [class_ "btn btn-primary"] "Incipiamus"
+
+-- i_ [class_ "fa-solid fa-arrow-right text-sm"] ("" :: Html())
 
 domus :: Html ()
 domus = do
-  doctype_ 
-  html_ [data_ "theme" "retro"] $ do
-      head_ $ do
-          title_ "Memōria Aeterna"
-          cdnImports
-      body_  $ do
-          navbar
+    doctype_
+    html_ [data_ "theme" "retro"] $ do
+        head_ $ do
+            title_ "Memōria Aeterna"
+            cdnImports
+        body_ $ do
+            navbar
+            hero
 
 main :: IO ()
-main = scotty 3000 $
-  get "/" $ 
-    html $ renderText domus
+main =
+    scotty 3000 $
+        get "/" $
+            html $
+                renderText domus
