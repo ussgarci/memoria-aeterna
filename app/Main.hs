@@ -3,6 +3,7 @@
 module Main where
 
 import Lucid
+import Lucid.Base (term)
 import qualified MyLib (someFunc)
 import Web.Scotty
 
@@ -20,7 +21,10 @@ cdnImports = do
         ]
     script_
         [src_ "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"]
-        ("" :: Html ()) -- script tag requires inner content or empty string in Lucid
+        ("" :: Html ())
+    script_
+        [src_ "https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"]
+        ("" :: Html ())
 
 navbar :: Html ()
 navbar =
@@ -35,7 +39,7 @@ hero =
             h1_ [class_ "text-5xl font-bold"] "Memōria Aeterna"
             span_ [class_ ""] "Memōria Aeterna: quia mala memoria mihi est"
             div_ [class_ "flex gap-4"] $ do
-                a_ [class_ "btn btn-primary"] "Incipiamus"
+                a_ [class_ "btn btn-primary", term "hx-post" "/submit", term "hx-trigger" "click"] "Incipiamus"
 
 -- i_ [class_ "fa-solid fa-arrow-right text-sm"] ("" :: Html())
 
